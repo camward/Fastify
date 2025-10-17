@@ -10,6 +10,7 @@ export const usersApi = createApi({
     // Получение списка пользователей
     getUsers: builder.query<User[], void>({
       query: () => ({ url: "users", method: "GET" }),
+      keepUnusedDataFor: 60, // Сколько секунд хранить данные в кеше, если запрос не используется
     }),
     // Добавление нового пользователя
     addUser: builder.mutation<void, Pick<User, "fio">>({

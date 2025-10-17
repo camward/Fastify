@@ -8,7 +8,14 @@ import {
 } from "../../../api/usersApi";
 
 function UserList() {
-  const { data: users, isLoading, isError } = useGetUsersQuery();
+  const {
+    data: users,
+    isLoading,
+    isError,
+  } = useGetUsersQuery(
+    undefined,
+    { pollingInterval: 5000 } // Обновляем каждые 5 секунд
+  );
   const [updateUserStatus] = useUpdateUserStatusMutation();
 
   type RowData = TableRow & User & { actions: React.ReactNode };
@@ -48,7 +55,7 @@ function UserList() {
     {
       name: "date",
       title: "Дата создания",
-      width: 150,
+      width: 250,
     },
     {
       name: "status",
