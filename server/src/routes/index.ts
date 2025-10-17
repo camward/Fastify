@@ -1,6 +1,11 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import UsersService from "../entity/user/service";
 import { CreateUser } from "../entity/user/types";
+import {
+  createUserSchema,
+  updateUserStatusSchema,
+  registerSchemas,
+} from "../schemas/user.schemas";
 
 export default async function registerRoutes(app: FastifyInstance) {
   app.get("/", async (_request: FastifyRequest, reply: FastifyReply) => {
@@ -8,34 +13,53 @@ export default async function registerRoutes(app: FastifyInstance) {
     return reply.send({ message: "Hello World!" });
   });
 
+  // Регистрируем схемы валидации
+  registerSchemas(app);
+
   const usersService = new UsersService();
 
   // Получение списка пользователей
   app.get("/users", async (_request: FastifyRequest, reply: FastifyReply) => {
     const usersList = usersService.getUsers();
+
     app.log.info("Запрос на получение списка пользователей");
     return reply.send(usersList);
   });
 
   // Добавление нового пользователя
-  app.post("/users", async (request: FastifyRequest, reply: FastifyReply) => {
-    const body = request.body as CreateUser;
+  app.post("/users", {
+    schema: {
+      body: createUserSchema,
+    },
+    handler: async (request: FastifyRequest, reply: FastifyReply) => {
+      const body = request.body as CreateUser;
 
-    if (!body || !body.fio) {
-      return reply
-        .status(400)
-        .send({ error: "Поле ФИО обязательно для заполнения" });
-    }
+      if (!body || !body.fio) {
+        return reply
+          .status(400)
+          .send({ error: "Поле ФИО обязательно для заполнения" });
+      }
 
-    const createdUser = usersService.addUser(body);
-    app.log.info("Запрос на добавление пользователя");
-    return reply.code(201).send(createdUser);
+      const createdUser = usersService.addUser(body);
+
+      app.log.info("Запрос на добавление пользователя");
+      return reply.code(201).send(createdUser);
+    },
   });
 
   // Обновление статуса пользователя
-  app.patch(
-    "/users/:id/status",
-    async (request: FastifyRequest, reply: FastifyReply) => {
+  app.patch("/users/:id/status", {
+    schema: {
+      params: {
+        type: "object",
+        properties: {
+          id: { type: "number" },
+        },
+        required: ["id"],
+      },
+      body: updateUserStatusSchema,
+    },
+    handler: async (request: FastifyRequest, reply: FastifyReply) => {
       const params = request.params as { id: string };
       const body = request.body as { status: string };
 
@@ -50,6 +74,6 @@ export default async function registerRoutes(app: FastifyInstance) {
 
       app.log.info("Запрос на обновление статуса");
       return reply.send(updatedUser);
-    }
-  );
+    },
+  });
 }
