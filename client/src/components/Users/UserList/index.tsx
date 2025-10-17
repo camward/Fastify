@@ -2,15 +2,24 @@ import * as React from "react";
 import { Table, Button } from "@admiral-ds/react-ui";
 import type { Column, TableRow } from "@admiral-ds/react-ui";
 import type { User } from "../../../types/user";
-import { useGetUsersQuery } from "../../../api/usersApi";
+import {
+  useGetUsersQuery,
+  useUpdateUserStatusMutation,
+} from "../../../api/usersApi";
 
 function UserList() {
   const { data: users, isLoading, isError } = useGetUsersQuery();
+  const [updateUserStatus] = useUpdateUserStatusMutation();
 
   type RowData = TableRow & User & { actions: React.ReactNode };
 
-  const changeStatus = (data: number) => {
-    console.log(data);
+  const changeStatus = async (id: number, status: string) => {
+    try {
+      const newStatus = status === "active" ? "inactive" : "active";
+      await updateUserStatus({ id, status: newStatus });
+    } catch (err) {
+      console.error("Ошибка обновления статуса:", err);
+    }
   };
 
   const rowList: RowData[] = (users || [])?.map((user) => ({
@@ -19,7 +28,7 @@ function UserList() {
       <Button
         appearance="ghost"
         dimension="s"
-        onClick={() => changeStatus(user.id)}
+        onClick={() => changeStatus(user.id, user.status)}
       >
         Изменить статус
       </Button>

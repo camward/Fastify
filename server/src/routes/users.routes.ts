@@ -8,11 +8,6 @@ import {
 } from "../schemas/user.schemas";
 
 export default async function registerUsersRoutes(app: FastifyInstance) {
-  app.get("/", async (_request: FastifyRequest, reply: FastifyReply) => {
-    app.log.info("Переход на главную страницу");
-    return reply.send({ message: "Hello World!" });
-  });
-
   // Регистрируем схемы валидации
   registerSchemas(app);
 

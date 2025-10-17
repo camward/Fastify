@@ -8,7 +8,10 @@ const app: FastifyInstance = fastify({
 });
 
 // Регистрация CORS
-app.register(fastifyCors);
+app.register(fastifyCors, {
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+});
 
 // Регистрируем маршруты
 app.register(usersRoutes);

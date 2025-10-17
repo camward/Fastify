@@ -22,7 +22,7 @@ class UsersService {
     },
   ];
 
-  private nextId = 3;
+  private nextId = 4;
 
   /**
    * Возвращает список всех пользователей
