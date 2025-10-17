@@ -20,6 +20,7 @@ async function startServer() {
   try {
     await app.listen({ port: 3000 });
     app.log.info(`Server started at ${app.server.address()}`);
+    }
   } catch (error) {
     app.log.error(error);
     process.exit(1);
