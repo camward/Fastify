@@ -1,26 +1,26 @@
 import fastify from "fastify";
 import fastifyCors from "@fastify/cors";
-import { FastifyRequest, FastifyReply } from "fastify";
+import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import routes from "./routes";
 
-const app = fastify({
+const app: FastifyInstance = fastify({
   logger: true,
 });
 
 // Регистрация CORS
 app.register(fastifyCors);
 
-// Обработчики маршрутов
-app.get("/", async (_request: FastifyRequest, reply: FastifyReply) => {
-  app.log.info("Handling root request");
-  return reply.send({ message: "Hello World!" });
-});
+// Регистрируем маршруты
+routes(app);
 
 // Старт сервера
 async function startServer() {
   try {
-    await app.listen({ port: 3000 });
-    app.log.info(`Server started at ${app.server.address()}`);
+    const address = await app.server.address();
+    if (address) {
+      app.log.info(`Server started at ${app.server.address()}`);
     }
+    await app.listen({ port: 3000 });
   } catch (error) {
     app.log.error(error);
     process.exit(1);
