@@ -1,7 +1,7 @@
 import fastify from "fastify";
 import fastifyCors from "@fastify/cors";
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import routes from "./routes";
+import usersRoutes from "./routes/users.routes";
 
 const app: FastifyInstance = fastify({
   logger: true,
@@ -11,7 +11,7 @@ const app: FastifyInstance = fastify({
 app.register(fastifyCors);
 
 // Регистрируем маршруты
-routes(app);
+app.register(usersRoutes);
 
 // Старт сервера
 async function startServer() {

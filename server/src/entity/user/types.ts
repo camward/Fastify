@@ -1,10 +1,10 @@
-export interface User {
+export interface UserProps {
   id: number;
   fio: string;
   date: string;
   status: string;
 }
 
-export type CreateUser = Pick<User, "fio">;
+export type CreateUserProps = Pick<UserProps, "fio">;
 
-export type UpdateStatus = Pick<User, "status"> & { id: number };
+export type UpdateStatusProps = Pick<UserProps, "status"> & { id: number };

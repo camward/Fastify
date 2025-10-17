@@ -1,13 +1,13 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import UsersService from "../entity/user/service";
-import { CreateUser } from "../entity/user/types";
+import { CreateUserProps } from "../entity/user/types";
 import {
   createUserSchema,
   updateUserStatusSchema,
   registerSchemas,
 } from "../schemas/user.schemas";
 
-export default async function registerRoutes(app: FastifyInstance) {
+export default async function registerUsersRoutes(app: FastifyInstance) {
   app.get("/", async (_request: FastifyRequest, reply: FastifyReply) => {
     app.log.info("Переход на главную страницу");
     return reply.send({ message: "Hello World!" });
@@ -32,7 +32,7 @@ export default async function registerRoutes(app: FastifyInstance) {
       body: createUserSchema,
     },
     handler: async (request: FastifyRequest, reply: FastifyReply) => {
-      const body = request.body as CreateUser;
+      const body = request.body as CreateUserProps;
 
       if (!body || !body.fio) {
         return reply

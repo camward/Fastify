@@ -1,7 +1,7 @@
-import { User, CreateUser, UpdateStatus } from "./types";
+import { UserProps, CreateUserProps, UpdateStatusProps } from "./types";
 
 class UsersService {
-  private users: User[] = [
+  private users: UserProps[] = [
     {
       id: 1,
       fio: "Иванов Иван Иванович",
@@ -27,7 +27,7 @@ class UsersService {
   /**
    * Возвращает список всех пользователей
    */
-  public getUsers(): User[] {
+  public getUsers(): UserProps[] {
     return this.users;
   }
 
@@ -36,8 +36,8 @@ class UsersService {
    *
    * @param input Данные нового пользователя
    */
-  public addUser(input: CreateUser): User {
-    const newUser: User = {
+  public addUser(input: CreateUserProps): UserProps {
+    const newUser: UserProps = {
       id: this.nextId++,
       fio: input.fio,
       date: new Date().toISOString(),
@@ -53,7 +53,7 @@ class UsersService {
    *
    * @param data Входные данные для обновления статуса
    */
-  public updateUserStatus(data: UpdateStatus): User | null {
+  public updateUserStatus(data: UpdateStatusProps): UserProps | null {
     const { id, status } = data;
     const userIndex = this.users.findIndex((user) => user.id === id);
 
