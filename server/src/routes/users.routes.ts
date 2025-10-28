@@ -1,11 +1,12 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import UsersService from "../entity/user/service";
-import { CreateUserProps } from "../entity/user/types";
+import { CreateUserProps, UserProps } from "../entity/user/types";
 import {
   createUserSchema,
   updateUserStatusSchema,
   registerSchemas,
 } from "../schemas/user.schemas";
+import User from '../entity/user/models'
 
 export default async function registerUsersRoutes(app: FastifyInstance) {
   // Регистрируем схемы валидации
@@ -15,7 +16,8 @@ export default async function registerUsersRoutes(app: FastifyInstance) {
 
   // Получение списка пользователей
   app.get("/users", async (_request: FastifyRequest, reply: FastifyReply) => {
-    const usersList = usersService.getUsers();
+    // const usersList = usersService.getUsers();
+    const usersList = await User.findAll();
 
     app.log.info("Запрос на получение списка пользователей");
     return reply.send(usersList);
@@ -27,7 +29,7 @@ export default async function registerUsersRoutes(app: FastifyInstance) {
       body: createUserSchema,
     },
     handler: async (request: FastifyRequest, reply: FastifyReply) => {
-      const body = request.body as CreateUserProps;
+      const body = request.body as UserProps;
 
       if (!body || !body.fio) {
         return reply
@@ -35,7 +37,8 @@ export default async function registerUsersRoutes(app: FastifyInstance) {
           .send({ error: "Поле ФИО обязательно для заполнения" });
       }
 
-      const createdUser = usersService.addUser(body);
+      // const createdUser = usersService.addUser(body);
+      const createdUser = await User.create(body);
 
       app.log.info("Запрос на добавление пользователя");
       return reply.code(201).send(createdUser);
@@ -58,9 +61,13 @@ export default async function registerUsersRoutes(app: FastifyInstance) {
       const params = request.params as { id: string };
       const body = request.body as { status: string };
 
-      const updatedUser = usersService.updateUserStatus({
-        id: parseInt(params.id),
-        status: body.status,
+      // const updatedUser = usersService.updateUserStatus({
+      //   id: parseInt(params.id),
+      //   status: body.status,
+      // });
+
+      const updatedUser = await User.update(body, {
+        where: { id: parseInt(params.id) }
       });
 
       if (!updatedUser) {
